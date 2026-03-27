@@ -3,6 +3,7 @@ version: '3.8'
 services:
   nginx:
     image: nginx:alpine
+    container_name: portfolio_nginx
     ports:
       - "80:80"
     volumes:
@@ -13,7 +14,7 @@ services:
       - frontend
 
   backend:
-    container_name: php
+    container_name: portfolio_backend
     build:
       context: .
       dockerfile: ./docker/php/Dockerfile
@@ -25,11 +26,12 @@ services:
       DB_PORT: 3306
       DB_DATABASE: protfolio_db
       DB_USERNAME: root
-      DB_PASSWORD: root    
+      DB_PASSWORD: root
     depends_on:
       - db
 
   frontend:
+    container_name: portfolio_frontend
     build:
       context: .
       dockerfile: ./docker/node/Dockerfile
@@ -44,9 +46,13 @@ services:
     container_name: portfolio_db
     environment:
       MYSQL_DATABASE: protfolio_db
+      MYSQL_ROOT_USER: root
+      MYSQL_ROOT_PASSWORD: root
       MYSQL_USER: laravel
-      MYSQL_PASSWORD: test
-      MYSQL_ROOT_PASSWORD: test
+      MYSQL_PASSWORD: laravel
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      TZ: 'Asia/Tokyo'
+
     volumes:
       - db-data:/var/lib/mysql
       - ./docker/mysql/my.cnf:/etc/mysql/conf.d/my.cnf
